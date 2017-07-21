@@ -1,0 +1,95 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<meta name="keywords" content="" />
+<meta name="description" content="" />
+<title></title>
+<link href="../../css/static_mobile_base.css" rel="stylesheet" type="text/css">
+<link href="../../css/create_group.css" rel="stylesheet" type="text/css">
+<script src="../../js/screenadapt.js"></script>
+<style>
+html{background:#efeff1;}
+.create-topicon .img-box{width:5.39rem;height:3.04rem;padding-bottom:.15rem;}
+.create-topicon .leaderboard-box{width:4.82rem;height:3.08rem;margin-top:0;padding-top:0;}
+</style>
+</head>
+
+<body>
+<div class="container-commonwrap mrt16" id="featureApp" v-cloak>
+    <div class="create-topicon" style="margin-bottom:.3rem;">
+    <h3 class="describe-title">语音聊天设置</h3>
+    <div class="img-box"><img class="picture" src="../../images/create_5/voice_pic.jpg"></div>
+    <p class="lat_bor">支持最多6人上麦同时语音，开黑聊天不在话下</p>
+    <ul class="ui-select-control ui-select-control-switch">
+        <li><div class="contain">多人语音聊天<span class="describe"><label class="tmar ui-switch onoffbtn"><input type="checkbox" id="voiceChatSwitch" onChange="changeFeatureSet(this.id,1)" :checked='featureSwitch|bufFeatureSwitch(1)'></label></span></div></li>
+    </ul>
+  </div>
+  <div class="create-topicon">
+    <h3 class="describe-title">排行榜设置</h3>
+    <div class="img-box leaderboard-box"><img class="picture" src="../../images/create_5/leaderboard_pic.jpg"></div>
+    <p class="lat_bor">打开可以在首页看到土豪榜和魅力榜哦</p>
+    <ul class="ui-select-control ui-select-control-switch">
+        <li><div class="contain">展示排行榜<span class="describe"><label class="tmar ui-switch onoffbtn"><input type="checkbox" id="leaderboardSwitch" onChange="changeFeatureSet(this.id,2)" :checked='featureSwitch|bufFeatureSwitch(2)'></label></span></div></li>
+    </ul>
+  </div>
+  <div class="ui-button-wrap"><button class="btn radius3" onClick="nextStep();">下一步</button></div>
+</div>
+<script src="../../lib/jquery.min.js"></script>
+<script src="../../lib/vue.min.js"></script>
+<script src="../../lib/layer_mobile/layer.js"></script>
+<script src="../../js/common_base.js"></script>
+<script src="../../js/configcommon.js"></script>
+<script>
+function nativeTojs(data){
+	var _data = eval("(" + data + ")");
+	var click_type = _data.click_type;
+	if(click_type==-1){
+		
+	}else if(click_type==2){
+		quit_create_group(); //退出建群流程
+	}
+};
+
+//typeid开关类型
+var vm_switch = new Vue({
+    el:"#featureApp",
+    data:{
+        featureSwitch:flockSettingsInfo
+    },filters:{
+        bufFeatureSwitch:function(flockSettingsInfo,typeid){ //获取缓存开关状态
+            switch(typeid)
+            {
+                case 1:  //多人语音聊天
+                    return flockSettingsInfo.voiceChat_switch;
+                    break;
+                case 2: //展示排行榜
+                    return flockSettingsInfo.leaderboard_switch;
+                    break;
+                default:
+                    //other code
+            }
+        }
+    }
+});
+
+//type:1多人语音聊天  2展示排行榜
+function changeFeatureSet(obj,type){
+    var changeval = document.getElementById(obj).checked==true ? 1 : 0;
+    if(type==1){ //多人语音聊天
+        flockSettingsInfo.voiceChat_switch = changeval;
+    }else if(type==2){ //展示排行榜
+        flockSettingsInfo.leaderboard_switch = changeval;
+    }
+    var flockJsonStringify = JSON.stringify(flockSettingsInfo);  //将对象转换为字符串
+    sessionStorage.setItem('flockStorageInfo',flockJsonStringify); //本地存储数据
+}
+
+//下一步
+function nextStep(){
+    window.location.href = './gain_settings.html?token='+getToken+'&envi='+getEnvi;
+}
+</script>
+</body>
+</html>

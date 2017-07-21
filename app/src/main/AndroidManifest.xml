@@ -19,7 +19,8 @@
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
-        <activity android:name=".WebViewTestActivity"/>
+        <activity android:name=".websetting.WebSettingsTestActivity"/>
+        <activity android:name=".LoadTestActivity"/>
         <activity
             android:name=".WebViewActivity"
             android:label="包青天的浏览器">

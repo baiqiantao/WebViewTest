@@ -1,10 +1,10 @@
-package test.bqt.com.webviewtest;
+package test.bqt.com.webviewtest.websetting;
 
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.webkit.WebSettings;
 
-public class WebViewModel implements Parcelable {
+public class WebSettingsModel implements Parcelable {
 	//这些搜索引擎都有大量大量的参数可以配置
 	public static final String SEARCH_TYPE_BAIDU = "https://www.baidu.com/s?ie=UTF-8&wd=";
 	public static final String SEARCH_TYPE_GOOGLE = "https://www.google.com.hk/#safe=strict&q=";
@@ -14,7 +14,6 @@ public class WebViewModel implements Parcelable {
 	public String url;
 	public String searchType;//Baidu，GitHub，Google等
 	public boolean showProgressBar;
-
 	//***************************************************************************************************************
 	//                                                                   以下为WebSettings中的同名方法
 	//***************************************************************************************************************
@@ -31,9 +30,11 @@ public class WebViewModel implements Parcelable {
 	public boolean setSupportZoom;
 	public boolean setGeolocationEnabled;
 	public int setCacheMode;
+	public int setMinimumFontSize;
+	public int setTextZoom;
 	public WebSettings.LayoutAlgorithm setLayoutAlgorithm;
 
-	private WebViewModel(Builder builder) {
+	private WebSettingsModel(Builder builder) {
 		searchType = builder.searchType;
 		title = builder.title;
 		url = builder.url;
@@ -51,6 +52,8 @@ public class WebViewModel implements Parcelable {
 		setSupportZoom = builder.setSupportZoom;
 		setGeolocationEnabled = builder.setGeolocationEnabled;
 		setCacheMode = builder.setCacheMode;
+		setMinimumFontSize = builder.setMinimumFontSize;
+		setTextZoom = builder.setTextZoom;
 		setLayoutAlgorithm = builder.setLayoutAlgorithm;
 	}
 
@@ -60,7 +63,7 @@ public class WebViewModel implements Parcelable {
 
 	@Override
 	public String toString() {
-		return "WebViewModel{" +
+		return "WebSettingsModel{" +
 				"searchType='" + searchType + '\'' +
 				", title='" + title + '\'' +
 				", url='" + url + '\'' +
@@ -78,6 +81,8 @@ public class WebViewModel implements Parcelable {
 				", setSupportZoom=" + setSupportZoom +
 				", setGeolocationEnabled=" + setGeolocationEnabled +
 				", setCacheMode=" + setCacheMode +
+				", setMinimumFontSize=" + setMinimumFontSize +
+				", setTextZoom=" + setTextZoom +
 				", setLayoutAlgorithm=" + setLayoutAlgorithm +
 				'}';
 	}
@@ -92,19 +97,21 @@ public class WebViewModel implements Parcelable {
 		private String searchType = "baidu";
 		//以下默认值均是WebSettings中同名get方法获取到的默认值
 		private boolean setAppCacheEnabled = false;//应用缓存API可用
-		private boolean setBuiltInZoomControls = false;//使用内置的缩放机制，设为false时setDisplayZoomControls无效
+		private boolean setBuiltInZoomControls = false;//使用内置的缩放机制，包括屏幕上的缩放控件和双指缩放手势
 		private int setCacheMode = WebSettings.LOAD_DEFAULT;//使用缓存的方式，默认值LOAD_DEFAULT，LOAD_NO_CACHE
 		private boolean setDatabaseEnabled = false;//数据库存储API可用
-		private boolean setDisplayZoomControls = true;//使用内置的缩放机制时是否展示缩放控件
+		private boolean setDisplayZoomControls = true;//是否显示缩放控件。setDisplayZoomControls设为true时才有效
 		private boolean setDomStorageEnabled = false;//DOM存储API可用
-		private boolean setGeolocationEnabled = true;
-		private boolean setJavaScriptCanOpenWindowsAutomatically = false;//让JavaScript自动打开窗口
+		private boolean setGeolocationEnabled = true;//定位可用。需要有定位权限和实现onGeolocationPermissionsShowPrompt回调方法
+		private boolean setJavaScriptCanOpenWindowsAutomatically = false;//让js自动打开窗口，适用于js方法window.open()
 		private boolean setJavaScriptEnabled = false;//允许js交互
-		private boolean setLoadWithOverviewMode = false;//允许缩小内容以适应屏幕宽度
-		private boolean setSupportMultipleWindows = false;//支持多窗口。如果设置为true，主程序要实现onCreateWindow
-		private boolean setSupportZoom = true;
+		private boolean setLoadWithOverviewMode = false;//是否在概览模式下加载页面，也就是缩放内容以适应屏幕宽度
+		private int setMinimumFontSize = 8;//设置最小的字号，默认为8
+		private boolean setSupportMultipleWindows = false;//支持多窗口。如果设置为true，需要实现onCreateWindow回调方法
+		private boolean setSupportZoom = true;//是否支持使用屏幕上的缩放控件和手势进行缩放
+		private int setTextZoom = 100;//设置页面上的文本缩放百分比，默认100
 		private boolean setUseWideViewPort = false;//重要！布局的宽度总是与WebView控件上的设备无关像素宽度一致
-		private WebSettings.LayoutAlgorithm setLayoutAlgorithm = WebSettings.LayoutAlgorithm.NARROW_COLUMNS;//设置布局类型
+		private WebSettings.LayoutAlgorithm setLayoutAlgorithm = WebSettings.LayoutAlgorithm.NARROW_COLUMNS;//设置布局
 		//会引起WebView重新布局。默认值NARROW_COLUMNS（适应内容大小），SINGLE_COLUMN（适应屏幕，内容将自动缩放）
 
 		private Builder() {
@@ -195,13 +202,23 @@ public class WebViewModel implements Parcelable {
 			return this;
 		}
 
+		public Builder setMinimumFontSize(int val) {
+			setMinimumFontSize = val;
+			return this;
+		}
+
+		public Builder setTextZoom(int val) {
+			setTextZoom = val;
+			return this;
+		}
+
 		public Builder setLayoutAlgorithm(WebSettings.LayoutAlgorithm val) {
 			setLayoutAlgorithm = val;
 			return this;
 		}
 
-		public WebViewModel build() {
-			return new WebViewModel(this);
+		public WebSettingsModel build() {
+			return new WebSettingsModel(this);
 		}
 	}
 
@@ -229,10 +246,12 @@ public class WebViewModel implements Parcelable {
 		dest.writeByte(this.setSupportZoom ? (byte) 1 : (byte) 0);
 		dest.writeByte(this.setGeolocationEnabled ? (byte) 1 : (byte) 0);
 		dest.writeInt(this.setCacheMode);
+		dest.writeInt(this.setMinimumFontSize);
+		dest.writeInt(this.setTextZoom);
 		dest.writeInt(this.setLayoutAlgorithm == null ? -1 : this.setLayoutAlgorithm.ordinal());
 	}
 
-	protected WebViewModel(Parcel in) {
+	protected WebSettingsModel(Parcel in) {
 		this.title = in.readString();
 		this.url = in.readString();
 		this.searchType = in.readString();
@@ -250,19 +269,21 @@ public class WebViewModel implements Parcelable {
 		this.setSupportZoom = in.readByte() != 0;
 		this.setGeolocationEnabled = in.readByte() != 0;
 		this.setCacheMode = in.readInt();
+		this.setMinimumFontSize = in.readInt();
+		this.setTextZoom = in.readInt();
 		int tmpSetLayoutAlgorithm = in.readInt();
 		this.setLayoutAlgorithm = tmpSetLayoutAlgorithm == -1 ? null : WebSettings.LayoutAlgorithm.values()[tmpSetLayoutAlgorithm];
 	}
 
-	public static final Creator<WebViewModel> CREATOR = new Creator<WebViewModel>() {
+	public static final Creator<WebSettingsModel> CREATOR = new Creator<WebSettingsModel>() {
 		@Override
-		public WebViewModel createFromParcel(Parcel source) {
-			return new WebViewModel(source);
+		public WebSettingsModel createFromParcel(Parcel source) {
+			return new WebSettingsModel(source);
 		}
 
 		@Override
-		public WebViewModel[] newArray(int size) {
-			return new WebViewModel[size];
+		public WebSettingsModel[] newArray(int size) {
+			return new WebSettingsModel[size];
 		}
 	};
 }
