@@ -22,6 +22,7 @@
         </activity>
         <activity android:name=".websetting.WebSettingsTestActivity"/>
         <activity android:name=".LoadTestActivity"/>
+        <activity android:name=".JSBridgeTestActivity"/>
         <activity
             android:name=".WebViewActivity"
             android:label="包青天的浏览器">

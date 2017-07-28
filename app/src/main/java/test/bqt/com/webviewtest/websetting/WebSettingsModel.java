@@ -13,7 +13,8 @@ public class WebSettingsModel implements Parcelable {
 	public String title;
 	public String url;
 	public String searchType;//Baidu，GitHub，Google等
-	public boolean showProgressBar;
+	public boolean showHorizontalPB;
+	public boolean showCenterPB;
 	//***************************************************************************************************************
 	//                                                                   以下为WebSettings中的同名方法
 	//***************************************************************************************************************
@@ -31,6 +32,7 @@ public class WebSettingsModel implements Parcelable {
 	public boolean setGeolocationEnabled;
 	public int setCacheMode;
 	public int setMinimumFontSize;
+	public int setMixedContentMode;
 	public int setTextZoom;
 	public WebSettings.LayoutAlgorithm setLayoutAlgorithm;
 
@@ -38,7 +40,8 @@ public class WebSettingsModel implements Parcelable {
 		searchType = builder.searchType;
 		title = builder.title;
 		url = builder.url;
-		showProgressBar = builder.showProgressBar;
+		showHorizontalPB = builder.showHorizontalPB;
+		showCenterPB = builder.showCenterPB;
 		setBuiltInZoomControls = builder.setBuiltInZoomControls;
 		setDisplayZoomControls = builder.setDisplayZoomControls;
 		setJavaScriptEnabled = builder.setJavaScriptEnabled;
@@ -53,6 +56,7 @@ public class WebSettingsModel implements Parcelable {
 		setGeolocationEnabled = builder.setGeolocationEnabled;
 		setCacheMode = builder.setCacheMode;
 		setMinimumFontSize = builder.setMinimumFontSize;
+		setMixedContentMode = builder.setMixedContentMode;
 		setTextZoom = builder.setTextZoom;
 		setLayoutAlgorithm = builder.setLayoutAlgorithm;
 	}
@@ -67,7 +71,8 @@ public class WebSettingsModel implements Parcelable {
 				"searchType='" + searchType + '\'' +
 				", title='" + title + '\'' +
 				", url='" + url + '\'' +
-				", showProgressBar=" + showProgressBar +
+				", showHorizontalPB=" + showHorizontalPB +
+				", showCenterPB=" + showCenterPB +
 				", setBuiltInZoomControls=" + setBuiltInZoomControls +
 				", setDisplayZoomControls=" + setDisplayZoomControls +
 				", setJavaScriptEnabled=" + setJavaScriptEnabled +
@@ -82,6 +87,7 @@ public class WebSettingsModel implements Parcelable {
 				", setGeolocationEnabled=" + setGeolocationEnabled +
 				", setCacheMode=" + setCacheMode +
 				", setMinimumFontSize=" + setMinimumFontSize +
+				", setMixedContentMode=" + setMixedContentMode +
 				", setTextZoom=" + setTextZoom +
 				", setLayoutAlgorithm=" + setLayoutAlgorithm +
 				'}';
@@ -93,10 +99,11 @@ public class WebSettingsModel implements Parcelable {
 		//***************************************************************************************************************
 		private String title = "默认的TITLE";
 		private String url = "https://github.com/baiqiantao";
-		private boolean showProgressBar = true;
+		private boolean showHorizontalPB = false;
+		private boolean showCenterPB = false;
 		private String searchType = "baidu";
 		//以下默认值均是WebSettings中同名get方法获取到的默认值
-		private boolean setAppCacheEnabled = false;//应用缓存API可用
+		private boolean setAppCacheEnabled = false;//应用缓存API可用(启动应用缓存)
 		private boolean setBuiltInZoomControls = false;//使用内置的缩放机制，包括屏幕上的缩放控件和双指缩放手势
 		private int setCacheMode = WebSettings.LOAD_DEFAULT;//使用缓存的方式，默认值LOAD_DEFAULT，LOAD_NO_CACHE
 		private boolean setDatabaseEnabled = false;//数据库存储API可用
@@ -107,6 +114,7 @@ public class WebSettingsModel implements Parcelable {
 		private boolean setJavaScriptEnabled = false;//允许js交互
 		private boolean setLoadWithOverviewMode = false;//是否在概览模式下加载页面，也就是缩放内容以适应屏幕宽度
 		private int setMinimumFontSize = 8;//设置最小的字号，默认为8
+		private int setMixedContentMode;//5.0开始默认为MIXED_CONTENT_NEVER_ALLOW，不允许混合模式，https中不能加载http资源
 		private boolean setSupportMultipleWindows = false;//支持多窗口。如果设置为true，需要实现onCreateWindow回调方法
 		private boolean setSupportZoom = true;//是否支持使用屏幕上的缩放控件和手势进行缩放
 		private int setTextZoom = 100;//设置页面上的文本缩放百分比，默认100
@@ -127,8 +135,13 @@ public class WebSettingsModel implements Parcelable {
 			return this;
 		}
 
-		public Builder showProgressBar(boolean val) {
-			showProgressBar = val;
+		public Builder showHorizontalPB(boolean val) {
+			showHorizontalPB = val;
+			return this;
+		}
+
+		public Builder showCenterPB(boolean val) {
+			showCenterPB = val;
 			return this;
 		}
 
@@ -207,6 +220,11 @@ public class WebSettingsModel implements Parcelable {
 			return this;
 		}
 
+		public Builder setMixedContentMode(int val) {
+			setMixedContentMode = val;
+			return this;
+		}
+
 		public Builder setTextZoom(int val) {
 			setTextZoom = val;
 			return this;
@@ -232,7 +250,8 @@ public class WebSettingsModel implements Parcelable {
 		dest.writeString(this.title);
 		dest.writeString(this.url);
 		dest.writeString(this.searchType);
-		dest.writeByte(this.showProgressBar ? (byte) 1 : (byte) 0);
+		dest.writeByte(this.showHorizontalPB ? (byte) 1 : (byte) 0);
+		dest.writeByte(this.showCenterPB ? (byte) 1 : (byte) 0);
 		dest.writeByte(this.setBuiltInZoomControls ? (byte) 1 : (byte) 0);
 		dest.writeByte(this.setDisplayZoomControls ? (byte) 1 : (byte) 0);
 		dest.writeByte(this.setJavaScriptEnabled ? (byte) 1 : (byte) 0);
@@ -247,6 +266,7 @@ public class WebSettingsModel implements Parcelable {
 		dest.writeByte(this.setGeolocationEnabled ? (byte) 1 : (byte) 0);
 		dest.writeInt(this.setCacheMode);
 		dest.writeInt(this.setMinimumFontSize);
+		dest.writeInt(this.setMixedContentMode);
 		dest.writeInt(this.setTextZoom);
 		dest.writeInt(this.setLayoutAlgorithm == null ? -1 : this.setLayoutAlgorithm.ordinal());
 	}
@@ -255,7 +275,8 @@ public class WebSettingsModel implements Parcelable {
 		this.title = in.readString();
 		this.url = in.readString();
 		this.searchType = in.readString();
-		this.showProgressBar = in.readByte() != 0;
+		this.showHorizontalPB = in.readByte() != 0;
+		this.showCenterPB = in.readByte() != 0;
 		this.setBuiltInZoomControls = in.readByte() != 0;
 		this.setDisplayZoomControls = in.readByte() != 0;
 		this.setJavaScriptEnabled = in.readByte() != 0;
@@ -270,6 +291,7 @@ public class WebSettingsModel implements Parcelable {
 		this.setGeolocationEnabled = in.readByte() != 0;
 		this.setCacheMode = in.readInt();
 		this.setMinimumFontSize = in.readInt();
+		this.setMixedContentMode = in.readInt();
 		this.setTextZoom = in.readInt();
 		int tmpSetLayoutAlgorithm = in.readInt();
 		this.setLayoutAlgorithm = tmpSetLayoutAlgorithm == -1 ? null : WebSettings.LayoutAlgorithm.values()[tmpSetLayoutAlgorithm];

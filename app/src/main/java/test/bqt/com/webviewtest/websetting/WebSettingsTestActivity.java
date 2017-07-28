@@ -17,7 +17,7 @@ public class WebSettingsTestActivity extends ListActivity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		String[] array = {"参数传为null，这时使用的是WebViewModel.Builder中的默认设置",
-				"搜索白乾涛（是否显示ProgressBar：showProgressBar）",
+				"搜索白乾涛（是否显示ProgressBar：showCenterPB、showHorizontalPB）",
 				"使用GitHub搜索指定的项目：searchType",
 
 				"设置WebSettings的支持缩放：setBuiltInZoomControls 和 setDisplayZoomControls",
@@ -39,7 +39,8 @@ public class WebSettingsTestActivity extends ListActivity {
 			case 1:
 				WebViewActivity.start(this, WebSettingsModel.newBuilder()
 						.title("是否显示ProgressBar")
-						.showProgressBar(b)
+						.showCenterPB(b)
+						.showHorizontalPB(!b)
 						.url("白乾涛").build());
 				break;
 			case 2:

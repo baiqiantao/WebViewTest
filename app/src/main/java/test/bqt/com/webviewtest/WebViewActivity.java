@@ -9,6 +9,7 @@ import android.view.GestureDetector;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.Window;
 import android.webkit.WebView;
 import android.widget.ProgressBar;
@@ -23,9 +24,9 @@ public class WebViewActivity extends Activity implements View.OnClickListener {
 	private GestureDetector mGestureDetector;//双击事件手势识别器
 	private WebSettingsModel model;
 	private WebView webview;
-	private final ThreadLocal<ProgressBar> progress_bar = new ThreadLocal<>();
-	private final ThreadLocal<TextView> tv_title = new ThreadLocal<>();
-	private final ThreadLocal<TextView> tv_back = new ThreadLocal<>();
+	private ProgressBar progress_bar;
+	private TextView tv_title;
+	private TextView tv_back;
 
 	public static void start(Activity ctx, WebSettingsModel model) {
 		Intent intent = new Intent(ctx, WebViewActivity.class);
@@ -41,35 +42,47 @@ public class WebViewActivity extends Activity implements View.OnClickListener {
 		initIntent();
 		initViews();
 	}
-	
-	@SuppressLint("JavascriptInterface")
-	private void initViews() {
-		progress_bar.set((ProgressBar) findViewById(R.id.progress_bar));
-		webview = (WebView) findViewById(R.id.webview);
-		tv_title.set((TextView) findViewById(R.id.tv_title));
-		tv_back.set((TextView) findViewById(R.id.tv_back));
 
-		tv_back.get().setOnClickListener(this);
-		progress_bar.get().setIndeterminate(true);//自动在最小到最大值之间来回移动，不明确具体的值
-		tv_title.get().setText(model.title);
-		mGestureDetector = new GestureDetector(this, new GestureDetector.SimpleOnGestureListener() {
-			@Override
-			public boolean onDoubleTap(MotionEvent e) {
-				webview.scrollTo(0, 0);
-				return super.onDoubleTap(e);
+	@Override
+	//点击后退按钮不退出Activity，而是让WebView后退一页。也可以通过webview.setOnKeyListener设置
+	public boolean onKeyDown(int keyCode, KeyEvent event) {
+		if (keyCode == KeyEvent.KEYCODE_BACK) {
+			if (webview.canGoBack()) {
+				webview.goBack(); //后退，goForward() 前进
+				return true;
+			} else {//退出网页
+				webview.loadUrl("about:blank");
+				finish();
 			}
-		});
-		tv_title.get().setOnTouchListener((v, event) -> {
-			mGestureDetector.onTouchEvent(event);
-			return true;
-		});
-
-		WebSettingsUtils.setWebSettings(webview.getSettings(), model);
-		webview.loadUrl(model.url);
-		webview.setWebViewClient(new MyWebViewClient(progress_bar.get(), model));//在本WebView中显示网页内容。
-		webview.addJavascriptInterface(new WebAppinterface(this), JS_INTERFACE);// 注册后可以在JS中调用此接口中定义的方法
+		}
+		return super.onKeyDown(keyCode, event);
 	}
 	
+	@Override
+	protected void onDestroy() {
+		super.onDestroy();
+		if (webview != null) {
+			if (webview.getParent() != null) ((ViewGroup) webview.getParent()).removeView(webview);
+			webview.removeAllViews();
+			webview.loadUrl("about:blank");
+			webview.stopLoading();
+			webview.setWebChromeClient(null);
+			webview.setWebViewClient(null);
+			webview.destroy();
+			webview = null;
+		}
+	}
+	
+	@Override
+	public void onClick(View v) {
+		switch (v.getId()) {
+			case R.id.tv_back:
+				finish();
+				break;
+		}
+	}
+
+	//*****************************************************初始化方法*********************************************************
 	private void initIntent() {
 		Intent intent = getIntent();
 		if (intent != null) {
@@ -81,8 +94,8 @@ public class WebViewActivity extends Activity implements View.OnClickListener {
 		} else model = WebSettingsModel.newBuilder().build();
 		Log.i("bqt", "【参数】" + model.toString());
 	}
-	
-	public static String initUrl(String url, String searchType) {
+
+	private String initUrl(String url, String searchType) {
 		if (url != null && !url.startsWith("http://") && !url.startsWith("https://")) {//不以http开头
 			if (url.startsWith("www.")
 					|| url.endsWith(".com") || url.endsWith(".cn") || url.endsWith(".org") || url.endsWith(".net")
@@ -99,32 +112,42 @@ public class WebViewActivity extends Activity implements View.OnClickListener {
 		return url;
 	}
 
-	@Override
-	//点击后退按钮不退出Activity，而是让WebView后退一页。也可以通过webview.setOnKeyListener设置
-	public boolean onKeyDown(int keyCode, KeyEvent event) {
+	@SuppressLint("JavascriptInterface")
+	private void initViews() {
+		if (model.showHorizontalPB) {
+			progress_bar = (ProgressBar) findViewById(R.id.progress_bar_horizontal);
+			progress_bar.setIndeterminate(false);
+			findViewById(R.id.progress_bar_center).setVisibility(View.GONE);
+		} else if (model.showCenterPB) {
+			progress_bar = (ProgressBar) findViewById(R.id.progress_bar_center);
+			progress_bar.setIndeterminate(true);//自动在最小到最大值之间来回移动，不明确具体的值
+			findViewById(R.id.progress_bar_horizontal).setVisibility(View.GONE);
+		} else {
+			findViewById(R.id.progress_bar_center).setVisibility(View.GONE);
+			findViewById(R.id.progress_bar_horizontal).setVisibility(View.GONE);
+		}
 
-		if (keyCode == KeyEvent.KEYCODE_BACK && webview.canGoBack()) {
-			webview.goBack(); //后退，goForward() 前进
+		webview = (WebView) findViewById(R.id.webview);
+		tv_title = (TextView) findViewById(R.id.tv_title);
+		tv_back = (TextView) findViewById(R.id.tv_back);
+
+		tv_back.setOnClickListener(this);
+		tv_title.setText(model.title);
+		mGestureDetector = new GestureDetector(this, new GestureDetector.SimpleOnGestureListener() {
+			@Override
+			public boolean onDoubleTap(MotionEvent e) {
+				webview.scrollTo(0, 0);
+				return super.onDoubleTap(e);
+			}
+		});
+		tv_title.setOnTouchListener((v, event) -> {
+			mGestureDetector.onTouchEvent(event);
 			return true;
-		} else finish();
-		return super.onKeyDown(keyCode, event);
-	}
-	
-	@Override
-	protected void onDestroy() {
-		super.onDestroy();
-		if (webview != null) {
-			webview.loadUrl("about:blank");
-			webview.destroy();
-		}
-	}
-	
-	@Override
-	public void onClick(View v) {
-		switch (v.getId()) {
-			case R.id.tv_back:
-				finish();
-				break;
-		}
+		});
+
+		WebSettingsUtils.setWebSettings(webview.getSettings(), model);
+		webview.setWebViewClient(new MyWebViewClient(progress_bar, model));//在本WebView中显示网页内容。
+		webview.addJavascriptInterface(new WebAppinterface(this), JS_INTERFACE);// 注册后可以在JS中调用此接口中定义的方法
+		webview.loadUrl(model.url);
 	}
 }
