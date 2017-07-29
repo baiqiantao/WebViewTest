@@ -16,7 +16,7 @@ import test.bqt.com.webviewtest.websetting.WebSettingsModel;
 import test.bqt.com.webviewtest.websetting.WebSettingsTestActivity;
 
 public class MainActivity extends ListActivity {
-
+	
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		String[] array = {"通过WebSettingsModel设置启动WebViewActivity时的参数",
@@ -25,9 +25,9 @@ public class MainActivity extends ListActivity {
 				"",
 				"",
 				"",};
-		setListAdapter(new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, new ArrayList<>(Arrays.asList(array))));
+		setListAdapter(new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, new ArrayList<String>(Arrays.asList(array))));
 	}
-
+	
 	@Override
 	protected void onListItemClick(ListView l, View v, int position, long id) {
 		switch (position) {
@@ -38,7 +38,9 @@ public class MainActivity extends ListActivity {
 				Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("http://www.dy2018.com/"));
 				intent.addCategory(Intent.CATEGORY_DEFAULT);
 				intent.addCategory(Intent.CATEGORY_BROWSABLE);
-				intent.putExtra(WebViewActivity.WEB_MODEL, WebSettingsModel.newBuilder().title("无效参数").build());//这个参数会丢失
+				intent.putExtra(WebViewActivity.WEB_MODEL, WebSettingsModel.newBuilder()
+						.title("无效参数")
+						.build());//这个参数会丢失
 				startActivity(intent);
 				printIntentInfo(intent);
 				break;
@@ -47,13 +49,14 @@ public class MainActivity extends ListActivity {
 				break;
 			case 3:
 
+				
 				break;
 			case 4:
-
+				
 				break;
 		}
 	}
-
+	
 	private void printIntentInfo(Intent intent) {
 		Log.i("bqt", "传入的数据=" + intent.getParcelableExtra(WebViewActivity.WEB_MODEL)//
 				+ "\nUri=" + intent.getData()//http://www.dy2018.com/
