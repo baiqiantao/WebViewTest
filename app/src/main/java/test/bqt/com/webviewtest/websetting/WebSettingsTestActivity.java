@@ -12,23 +12,26 @@ import java.util.Random;
 
 import test.bqt.com.webviewtest.WebViewActivity;
 
+/**
+ * 演示通过WebSettingsModel设置参数启动WebViewActivity
+ */
 public class WebSettingsTestActivity extends ListActivity {
-
+	
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		String[] array = {"参数传为null，这时使用的是WebViewModel.Builder中的默认设置",
 				"搜索白乾涛（是否显示ProgressBar：showCenterPB、showHorizontalPB）",
 				"使用GitHub搜索指定的项目：searchType",
-
+				
 				"设置WebSettings的支持缩放：setBuiltInZoomControls 和 setDisplayZoomControls",
 				"设置WebSettings的显示模式：setUseWideViewPort 和 setLoadWithOverviewMode",
 				"设置WebSettings的字体缩放：setTextZoom",
 				"设置WebSettings的最小字体：setMinimumFontSize",};
-		setListAdapter(new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, new ArrayList<>(Arrays.asList(array))));
+		setListAdapter(new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, new ArrayList<String>(Arrays.asList(array))));
 	}
-
+	
 	private boolean b;
-
+	
 	@Override
 	protected void onListItemClick(ListView l, View v, int position, long id) {
 		b = !b;

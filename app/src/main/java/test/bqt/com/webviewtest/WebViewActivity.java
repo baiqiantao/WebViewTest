@@ -3,6 +3,7 @@ package test.bqt.com.webviewtest;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.GestureDetector;
@@ -27,7 +28,7 @@ public class WebViewActivity extends Activity implements View.OnClickListener {
 	private ProgressBar progress_bar;
 	private TextView tv_title;
 	private TextView tv_back;
-
+	
 	public static void start(Activity ctx, WebSettingsModel model) {
 		Intent intent = new Intent(ctx, WebViewActivity.class);
 		intent.putExtra(WEB_MODEL, model);
@@ -40,11 +41,12 @@ public class WebViewActivity extends Activity implements View.OnClickListener {
 		requestWindowFeature(Window.FEATURE_NO_TITLE);
 		setContentView(R.layout.activity_webview);
 		initIntent();
+		findViews();
 		initViews();
 	}
-
+	
 	@Override
-	//点击后退按钮不退出Activity，而是让WebView后退一页。也可以通过webview.setOnKeyListener设置
+	//设置当点击后退按钮时不是退出Activity，而是让WebView后退一页。也可以通过webview.setOnKeyListener设置
 	public boolean onKeyDown(int keyCode, KeyEvent event) {
 		if (keyCode == KeyEvent.KEYCODE_BACK) {
 			if (webview.canGoBack()) {
@@ -81,20 +83,20 @@ public class WebViewActivity extends Activity implements View.OnClickListener {
 				break;
 		}
 	}
-
+	
 	//*****************************************************初始化方法*********************************************************
 	private void initIntent() {
 		Intent intent = getIntent();
 		if (intent != null) {
 			if (intent.getParcelableExtra(WEB_MODEL) != null) model = intent.getParcelableExtra(WEB_MODEL);
 			else model = WebSettingsModel.newBuilder().build();
-
+			
 			if (intent.getDataString() != null) model.url = initUrl(intent.getDataString(), model.searchType);//优先使用此URL
 			else model.url = initUrl(model.url, model.searchType);
 		} else model = WebSettingsModel.newBuilder().build();
 		Log.i("bqt", "【参数】" + model.toString());
 	}
-
+	
 	private String initUrl(String url, String searchType) {
 		if (url != null && !url.startsWith("http://") && !url.startsWith("https://")) {//不以http开头
 			if (url.startsWith("www.")
@@ -111,9 +113,8 @@ public class WebViewActivity extends Activity implements View.OnClickListener {
 		}
 		return url;
 	}
-
-	@SuppressLint("JavascriptInterface")
-	private void initViews() {
+	
+	private void findViews() {
 		if (model.showHorizontalPB) {
 			progress_bar = (ProgressBar) findViewById(R.id.progress_bar_horizontal);
 			progress_bar.setIndeterminate(false);
@@ -126,11 +127,14 @@ public class WebViewActivity extends Activity implements View.OnClickListener {
 			findViewById(R.id.progress_bar_center).setVisibility(View.GONE);
 			findViewById(R.id.progress_bar_horizontal).setVisibility(View.GONE);
 		}
-
+		
 		webview = (WebView) findViewById(R.id.webview);
 		tv_title = (TextView) findViewById(R.id.tv_title);
 		tv_back = (TextView) findViewById(R.id.tv_back);
-
+	}
+	
+	@SuppressLint("JavascriptInterface")
+	private void initViews() {
 		tv_back.setOnClickListener(this);
 		tv_title.setText(model.title);
 		mGestureDetector = new GestureDetector(this, new GestureDetector.SimpleOnGestureListener() {
@@ -144,10 +148,17 @@ public class WebViewActivity extends Activity implements View.OnClickListener {
 			mGestureDetector.onTouchEvent(event);
 			return true;
 		});
-
+		
 		WebSettingsUtils.setWebSettings(webview.getSettings(), model);
-		webview.setWebViewClient(new MyWebViewClient(progress_bar, model));//在本WebView中显示网页内容。
+		webview.setWebViewClient(new MyWebViewClient(progress_bar));//在本WebView中显示网页内容。
 		webview.addJavascriptInterface(new WebAppinterface(this), JS_INTERFACE);// 注册后可以在JS中调用此接口中定义的方法
+		//在6.0之前，WebView没有提供setOnScrollChangeListener方法，需要我们自定义WebView，并重写其onScrollChanged方法
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {//23
+			webview.setOnScrollChangeListener((v, scrollX, scrollY, oldScrollX, oldScrollY) -> {
+				//这里OnScrollChangeListener中回调过来的数据完全是基类View中onScrollChanged方法中的数据
+				Log.i("bqt", "【onScrollChange】" + scrollX + "  " + scrollY + "  " + oldScrollX + "  " + oldScrollY);
+			});
+		}
 		webview.loadUrl(model.url);
 	}
 }

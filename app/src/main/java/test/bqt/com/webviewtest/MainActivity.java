@@ -19,9 +19,9 @@ public class MainActivity extends ListActivity {
 	
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		String[] array = {"通过WebSettingsModel设置启动WebViewActivity时的参数",
-				"通过浏览器打开",
-				"测试load方法",
+		String[] array = {"1、演示通过WebSettingsModel设置参数启动WebViewActivity",
+				"2、演示使用隐式意图打开URL",
+				"3、测试load方法",
 				"",
 				"",
 				"",};
@@ -38,9 +38,7 @@ public class MainActivity extends ListActivity {
 				Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("http://www.dy2018.com/"));
 				intent.addCategory(Intent.CATEGORY_DEFAULT);
 				intent.addCategory(Intent.CATEGORY_BROWSABLE);
-				intent.putExtra(WebViewActivity.WEB_MODEL, WebSettingsModel.newBuilder()
-						.title("无效参数")
-						.build());//这个参数会丢失
+				intent.putExtra(WebViewActivity.WEB_MODEL, WebSettingsModel.newBuilder().title("无效的数据").build());//这里传的数据不会被解析！
 				startActivity(intent);
 				printIntentInfo(intent);
 				break;
@@ -48,8 +46,7 @@ public class MainActivity extends ListActivity {
 				startActivity(new Intent(this, LoadTestActivity.class));
 				break;
 			case 3:
-
-				
+				WebViewActivity.start(this, WebSettingsModel.newBuilder().url("http://www.12306.cn/mormhweb/").build());
 				break;
 			case 4:
 				
