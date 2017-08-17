@@ -1,7 +1,9 @@
-package test.bqt.com.webviewtest;
+package test.bqt.com.webviewtest.client;
 
 import android.annotation.TargetApi;
+import android.content.Intent;
 import android.graphics.Bitmap;
+import android.net.Uri;
 import android.net.http.SslError;
 import android.os.Build;
 import android.util.Log;
@@ -18,12 +20,16 @@ import android.widget.ProgressBar;
 import java.io.IOException;
 import java.util.Random;
 
+import test.bqt.com.webviewtest.WebViewActivity;
+
 public class MyWebViewClient extends WebViewClient {
 	private ProgressBar mProgressBar;
+	private WebViewActivity activity;
 	
-	public MyWebViewClient(ProgressBar mProgressBar) {
+	public MyWebViewClient(WebViewActivity activity) {
 		super();
-		this.mProgressBar = mProgressBar;
+		this.activity = activity;
+		mProgressBar = activity.getProgress_bar();
 	}
 	
 	@Override
@@ -38,6 +44,7 @@ public class MyWebViewClient extends WebViewClient {
 		//favicon(网站图标)：如果这个favicon已经存储在本地数据库中，则会返回这个网页的favicon，否则返回为null
 		Log.i("bqt", "【onPageStarted】" + url);
 		if (mProgressBar != null) mProgressBar.setVisibility(View.VISIBLE);//在开始加载时显示进度条
+		activity.getIv_icon().setVisibility(View.GONE);
 		super.onPageStarted(view, url, favicon);
 	}
 	
@@ -60,8 +67,8 @@ public class MyWebViewClient extends WebViewClient {
 		//访问指定的网址发生错误时回调，我们可以在这里做错误处理，比如再请求加载一次，或者提示404的错误页面
 		//如点击一个迅雷下载的资源时【ftp://***  -10  net::ERR_UNKNOWN_URL_SCHEME】
 		Log.i("bqt", "【onReceivedError】" + request.getUrl().toString() + "  " + error.getErrorCode() + "  " + error.getDescription());
-		if (new Random().nextBoolean()) super.onReceivedError(view, request, error);
-		else view.loadUrl("file:///android_asset/h5/test.html");
+		if (error.getErrorCode() == -10) view.loadUrl("file:///android_asset/h5/test.html");
+		else super.onReceivedError(view, request, error);
 	}
 	
 	@TargetApi(Build.VERSION_CODES.M)
@@ -97,7 +104,7 @@ public class MyWebViewClient extends WebViewClient {
 		//如果返回值为null，则WebView会照常继续加载资源。 否则，将使用返回的响应和数据。
 		Log.i("bqt", "【shouldInterceptRequest】" + request.getUrl().toString() + "  " + request.getMethod());
 		if (new Random().nextBoolean()) return super.shouldInterceptRequest(view, request);
-		else if (request.getUrl().toString().endsWith(".jpg")) {
+		else if (request.getUrl().toString().endsWith("你妹的.jpg")) {
 			try {
 				return new WebResourceResponse("text/html", "UTF-8", view.getContext().getAssets().open("icon.jpg"));
 			} catch (IOException e) {
@@ -127,6 +134,14 @@ public class MyWebViewClient extends WebViewClient {
 	public boolean shouldOverrideUrlLoading(WebView view, String url) {
 		boolean b = new Random().nextBoolean();
 		Log.i("bqt", "【shouldOverrideUrlLoading废弃方法】" + b + "  " + url);
+		//识别电话、短信、邮件等
+		if (url.startsWith(WebView.SCHEME_TEL) || url.startsWith("sms:") || url.startsWith(WebView.SCHEME_MAILTO)) {
+			Intent intent = new Intent(Intent.ACTION_VIEW);
+			intent.setData(Uri.parse(url));
+			view.getContext().startActivity(intent);
+			return true;
+		}
+		
 		if (b) return super.shouldOverrideUrlLoading(view, url);//没必要折腾，只要设置了WebViewClient，使用默认的实现就行！
 		else {
 			view.loadUrl(url);//不去调用系统浏览器， 而是在本WebView中跳转

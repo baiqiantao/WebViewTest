@@ -3,6 +3,7 @@ package test.bqt.com.webviewtest;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Intent;
+import android.content.pm.ActivityInfo;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
@@ -13,9 +14,13 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.webkit.WebView;
+import android.widget.FrameLayout;
+import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import test.bqt.com.webviewtest.client.MyWebChromeClient;
+import test.bqt.com.webviewtest.client.MyWebViewClient;
 import test.bqt.com.webviewtest.websetting.WebSettingsModel;
 import test.bqt.com.webviewtest.websetting.WebSettingsUtils;
 
@@ -28,6 +33,9 @@ public class WebViewActivity extends Activity implements View.OnClickListener {
 	private ProgressBar progress_bar;
 	private TextView tv_title;
 	private TextView tv_back;
+	private ImageView iv_icon;
+	private FrameLayout fl_content;
+	private MyWebChromeClient mWebChromeClient;
 	
 	public static void start(Activity ctx, WebSettingsModel model) {
 		Intent intent = new Intent(ctx, WebViewActivity.class);
@@ -35,6 +43,7 @@ public class WebViewActivity extends Activity implements View.OnClickListener {
 		ctx.startActivity(intent);
 	}
 	
+	//*****************************************************生命周期方法*********************************************************
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -43,21 +52,6 @@ public class WebViewActivity extends Activity implements View.OnClickListener {
 		initIntent();
 		findViews();
 		initViews();
-	}
-	
-	@Override
-	//设置当点击后退按钮时不是退出Activity，而是让WebView后退一页。也可以通过webview.setOnKeyListener设置
-	public boolean onKeyDown(int keyCode, KeyEvent event) {
-		if (keyCode == KeyEvent.KEYCODE_BACK) {
-			if (webview.canGoBack()) {
-				webview.goBack(); //后退，goForward() 前进
-				return true;
-			} else {//退出网页
-				webview.loadUrl("about:blank");
-				finish();
-			}
-		}
-		return super.onKeyDown(keyCode, event);
 	}
 	
 	@Override
@@ -75,12 +69,43 @@ public class WebViewActivity extends Activity implements View.OnClickListener {
 		}
 	}
 	
+	//*****************************************************重写的方法*********************************************************
+	@Override
+	//设置当点击后退按钮时不是退出Activity，而是让WebView后退一页。也可以通过webview.setOnKeyListener设置
+	public boolean onKeyDown(int keyCode, KeyEvent event) {
+		if (keyCode == KeyEvent.KEYCODE_BACK) {
+			if (mWebChromeClient != null && mWebChromeClient.isOnShowCustomView()) {
+				mWebChromeClient.onHideCustomView();
+				setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+				return true;
+			} else if (webview.canGoBack()) {//返回网页上一页
+				webview.goBack(); //后退，goForward() 前进
+				return true;
+			} else {//退出网页
+				webview.loadUrl("about:blank");
+				finish();
+			}
+		}
+		return super.onKeyDown(keyCode, event);
+	}
+	
 	@Override
 	public void onClick(View v) {
 		switch (v.getId()) {
 			case R.id.tv_back:
 				finish();
 				break;
+		}
+	}
+	
+	@Override
+	protected void onActivityResult(int requestCode, int resultCode, Intent intent) {
+		Log.i("bqt", "【onActivityResult】 requestCode=" + requestCode + "  resultCode=" + resultCode);
+		//上传图片之后的回调
+		if (requestCode == MyWebChromeClient.FILECHOOSER_RESULTCODE) {
+			mWebChromeClient.mUploadMessage(intent, resultCode);
+		} else if (requestCode == MyWebChromeClient.FILECHOOSER_RESULTCODE_FOR_ANDROID_5) {
+			mWebChromeClient.mUploadMessageForAndroid5(intent, resultCode);
 		}
 	}
 	
@@ -98,7 +123,9 @@ public class WebViewActivity extends Activity implements View.OnClickListener {
 	}
 	
 	private String initUrl(String url, String searchType) {
-		if (url != null && !url.startsWith("http://") && !url.startsWith("https://")) {//不以http开头
+		if (url == null || url.equals("")) return "http://www.cnblogs.com/baiqiantao";
+		else if (url.startsWith("file://")) return url;
+		else if (!url.startsWith("http://") && !url.startsWith("https://")) {//不以http开头
 			if (url.startsWith("www.")
 					|| url.endsWith(".com") || url.endsWith(".cn") || url.endsWith(".org") || url.endsWith(".net")
 					|| url.endsWith(".co") || url.endsWith(".cc") || url.endsWith(".xyz") || url.endsWith(".so")) {
@@ -131,6 +158,8 @@ public class WebViewActivity extends Activity implements View.OnClickListener {
 		webview = (WebView) findViewById(R.id.webview);
 		tv_title = (TextView) findViewById(R.id.tv_title);
 		tv_back = (TextView) findViewById(R.id.tv_back);
+		iv_icon = (ImageView) findViewById(R.id.iv_icon);
+		fl_content = (FrameLayout) findViewById(R.id.fl_content);
 	}
 	
 	@SuppressLint("JavascriptInterface")
@@ -150,7 +179,8 @@ public class WebViewActivity extends Activity implements View.OnClickListener {
 		});
 		
 		WebSettingsUtils.setWebSettings(webview.getSettings(), model);
-		webview.setWebViewClient(new MyWebViewClient(progress_bar));//在本WebView中显示网页内容。
+		webview.setWebViewClient(new MyWebViewClient(progress_bar));
+		webview.setWebChromeClient(mWebChromeClient = new MyWebChromeClient(this));
 		webview.addJavascriptInterface(new WebAppinterface(this), JS_INTERFACE);// 注册后可以在JS中调用此接口中定义的方法
 		//在6.0之前，WebView没有提供setOnScrollChangeListener方法，需要我们自定义WebView，并重写其onScrollChanged方法
 		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {//23
@@ -160,5 +190,29 @@ public class WebViewActivity extends Activity implements View.OnClickListener {
 			});
 		}
 		webview.loadUrl(model.url);
+	}
+	
+	public WebView getWebview() {
+		return webview;
+	}
+	
+	public ProgressBar getProgress_bar() {
+		return progress_bar;
+	}
+	
+	public TextView getTv_title() {
+		return tv_title;
+	}
+	
+	public TextView getTv_back() {
+		return tv_back;
+	}
+	
+	public ImageView getIv_icon() {
+		return iv_icon;
+	}
+	
+	public FrameLayout getFl_content() {
+		return fl_content;
 	}
 }

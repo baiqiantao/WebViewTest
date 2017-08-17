@@ -9,7 +9,12 @@ public class WebSettingsModel implements Parcelable {
 	public static final String SEARCH_TYPE_BAIDU = "https://www.baidu.com/s?ie=UTF-8&wd=";
 	public static final String SEARCH_TYPE_GOOGLE = "https://www.google.com.hk/#safe=strict&q=";
 	public static final String SEARCH_TYPE_GITHUB = "https://github.com/search?utf8=%E2%9C%93&q=";
-
+	
+	//这些事WebSettings中为setMixedContentMode方法提供的常量，因为只能在5.0以上使用，所以我把他们拷到了这里
+	public static final int MIXED_CONTENT_ALWAYS_ALLOW = 0;
+	public static final int MIXED_CONTENT_NEVER_ALLOW = 1;
+	public static final int MIXED_CONTENT_COMPATIBILITY_MODE = 2;
+	
 	public String title;
 	public String url;
 	public String searchType;//Baidu，GitHub，Google等
@@ -35,7 +40,7 @@ public class WebSettingsModel implements Parcelable {
 	public int setMixedContentMode;
 	public int setTextZoom;
 	public WebSettings.LayoutAlgorithm setLayoutAlgorithm;
-
+	
 	private WebSettingsModel(Builder builder) {
 		searchType = builder.searchType;
 		title = builder.title;
@@ -60,11 +65,11 @@ public class WebSettingsModel implements Parcelable {
 		setTextZoom = builder.setTextZoom;
 		setLayoutAlgorithm = builder.setLayoutAlgorithm;
 	}
-
+	
 	public static Builder newBuilder() {
 		return new Builder();
 	}
-
+	
 	@Override
 	public String toString() {
 		return "WebSettingsModel{" +
@@ -92,7 +97,7 @@ public class WebSettingsModel implements Parcelable {
 				", setLayoutAlgorithm=" + setLayoutAlgorithm +
 				'}';
 	}
-
+	
 	public static final class Builder {
 		//***************************************************************************************************************
 		//                                                                             在这里设置默认值
@@ -114,137 +119,138 @@ public class WebSettingsModel implements Parcelable {
 		private boolean setJavaScriptEnabled = false;//允许js交互
 		private boolean setLoadWithOverviewMode = false;//是否在概览模式下加载页面，也就是缩放内容以适应屏幕宽度
 		private int setMinimumFontSize = 8;//设置最小的字号，默认为8
-		private int setMixedContentMode;//5.0开始默认为MIXED_CONTENT_NEVER_ALLOW，不允许混合模式，https中不能加载http资源
+		private int setMixedContentMode = WebSettingsModel.MIXED_CONTENT_NEVER_ALLOW;//设置混合模式
+		//5.0开始默认的混合模式为MIXED_CONTENT_NEVER_ALLOW，即不允许使用混合模式，即https中不能加载http资源
 		private boolean setSupportMultipleWindows = false;//支持多窗口。如果设置为true，需要实现onCreateWindow回调方法
 		private boolean setSupportZoom = true;//是否支持使用屏幕上的缩放控件和手势进行缩放
 		private int setTextZoom = 100;//设置页面上的文本缩放百分比，默认100
 		private boolean setUseWideViewPort = false;//重要！布局的宽度总是与WebView控件上的设备无关像素宽度一致
 		private WebSettings.LayoutAlgorithm setLayoutAlgorithm = WebSettings.LayoutAlgorithm.NARROW_COLUMNS;//设置布局
 		//会引起WebView重新布局。默认值NARROW_COLUMNS（适应内容大小），SINGLE_COLUMN（适应屏幕，内容将自动缩放）
-
+		
 		private Builder() {
 		}
-
+		
 		public Builder title(String val) {
 			title = val;
 			return this;
 		}
-
+		
 		public Builder url(String val) {
 			url = val;
 			return this;
 		}
-
+		
 		public Builder showHorizontalPB(boolean val) {
 			showHorizontalPB = val;
 			return this;
 		}
-
+		
 		public Builder showCenterPB(boolean val) {
 			showCenterPB = val;
 			return this;
 		}
-
+		
 		public Builder searchType(String val) {
 			searchType = val;
 			return this;
 		}
-
+		
 		public Builder setBuiltInZoomControls(boolean val) {
 			setBuiltInZoomControls = val;
 			return this;
 		}
-
+		
 		public Builder setDisplayZoomControls(boolean val) {
 			setDisplayZoomControls = val;
 			return this;
 		}
-
+		
 		public Builder setJavaScriptEnabled(boolean val) {
 			setJavaScriptEnabled = val;
 			return this;
 		}
-
+		
 		public Builder setJavaScriptCanOpenWindowsAutomatically(boolean val) {
 			setJavaScriptCanOpenWindowsAutomatically = val;
 			return this;
 		}
-
+		
 		public Builder setUseWideViewPort(boolean val) {
 			setUseWideViewPort = val;
 			return this;
 		}
-
+		
 		public Builder setLoadWithOverviewMode(boolean val) {
 			setLoadWithOverviewMode = val;
 			return this;
 		}
-
+		
 		public Builder setAppCacheEnabled(boolean val) {
 			setAppCacheEnabled = val;
 			return this;
 		}
-
+		
 		public Builder setDatabaseEnabled(boolean val) {
 			setDatabaseEnabled = val;
 			return this;
 		}
-
+		
 		public Builder setDomStorageEnabled(boolean val) {
 			setDomStorageEnabled = val;
 			return this;
 		}
-
+		
 		public Builder setSupportMultipleWindows(boolean val) {
 			setSupportMultipleWindows = val;
 			return this;
 		}
-
+		
 		public Builder setSupportZoom(boolean val) {
 			setSupportZoom = val;
 			return this;
 		}
-
+		
 		public Builder setGeolocationEnabled(boolean val) {
 			setGeolocationEnabled = val;
 			return this;
 		}
-
+		
 		public Builder setCacheMode(int val) {
 			setCacheMode = val;
 			return this;
 		}
-
+		
 		public Builder setMinimumFontSize(int val) {
 			setMinimumFontSize = val;
 			return this;
 		}
-
+		
 		public Builder setMixedContentMode(int val) {
 			setMixedContentMode = val;
 			return this;
 		}
-
+		
 		public Builder setTextZoom(int val) {
 			setTextZoom = val;
 			return this;
 		}
-
+		
 		public Builder setLayoutAlgorithm(WebSettings.LayoutAlgorithm val) {
 			setLayoutAlgorithm = val;
 			return this;
 		}
-
+		
 		public WebSettingsModel build() {
 			return new WebSettingsModel(this);
 		}
 	}
-
+	
 	@Override
 	public int describeContents() {
 		return 0;
 	}
-
+	
 	@Override
 	public void writeToParcel(Parcel dest, int flags) {
 		dest.writeString(this.title);
@@ -270,7 +276,7 @@ public class WebSettingsModel implements Parcelable {
 		dest.writeInt(this.setTextZoom);
 		dest.writeInt(this.setLayoutAlgorithm == null ? -1 : this.setLayoutAlgorithm.ordinal());
 	}
-
+	
 	protected WebSettingsModel(Parcel in) {
 		this.title = in.readString();
 		this.url = in.readString();
@@ -296,13 +302,13 @@ public class WebSettingsModel implements Parcelable {
 		int tmpSetLayoutAlgorithm = in.readInt();
 		this.setLayoutAlgorithm = tmpSetLayoutAlgorithm == -1 ? null : WebSettings.LayoutAlgorithm.values()[tmpSetLayoutAlgorithm];
 	}
-
+	
 	public static final Creator<WebSettingsModel> CREATOR = new Creator<WebSettingsModel>() {
 		@Override
 		public WebSettingsModel createFromParcel(Parcel source) {
 			return new WebSettingsModel(source);
 		}
-
+		
 		@Override
 		public WebSettingsModel[] newArray(int size) {
 			return new WebSettingsModel[size];
