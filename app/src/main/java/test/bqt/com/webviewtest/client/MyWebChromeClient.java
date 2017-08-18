@@ -1,5 +1,6 @@
 package test.bqt.com.webviewtest.client;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.graphics.Bitmap;
@@ -11,8 +12,10 @@ import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.webkit.ConsoleMessage;
+import android.webkit.GeolocationPermissions;
 import android.webkit.JsPromptResult;
 import android.webkit.JsResult;
+import android.webkit.PermissionRequest;
 import android.webkit.ValueCallback;
 import android.webkit.WebChromeClient;
 import android.webkit.WebView;
@@ -25,8 +28,6 @@ import java.util.Random;
 
 import test.bqt.com.webviewtest.R;
 import test.bqt.com.webviewtest.WebViewActivity;
-
-import static android.app.Activity.RESULT_OK;
 
 public class MyWebChromeClient extends WebChromeClient {
 	private WebViewActivity activity;//控件的显示和隐藏应该都由WebViewClient控制
@@ -131,6 +132,44 @@ public class MyWebChromeClient extends WebChromeClient {
 	}
 	
 	@Override
+	public void onPermissionRequest(PermissionRequest request) {
+		Log.i("bqt", "【onPermissionRequest】");
+		//The host application must invoke grant(String[]) or deny(). If this method isn't overridden, the permission is denied拒绝.
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+			Log.i("bqt", "Origin=" + request.getOrigin().toString() + "   Resources=" + Arrays.toString(request.getResources()));
+		}
+		super.onPermissionRequest(request);
+	}
+	
+	@Override
+	public void onPermissionRequestCanceled(PermissionRequest request) {
+		Log.i("bqt", "【onPermissionRequestCanceled】");
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+			Log.i("bqt", "Origin=" + request.getOrigin().toString() + "   Resources=" + Arrays.toString(request.getResources()));
+		}
+		super.onPermissionRequestCanceled(request);
+	}
+	
+	@Override
+	public void onGeolocationPermissionsShowPrompt(String origin, GeolocationPermissions.Callback callback) {
+		Log.i("bqt", "【onGeolocationPermissionsShowPrompt】" + origin);
+		//callback只有一个方法【public void invoke(String origin, boolean allow, boolean retain)】
+		super.onGeolocationPermissionsShowPrompt(origin, callback);
+	}
+	
+	@Override
+	public void onGeolocationPermissionsHidePrompt() {
+		Log.i("bqt", "【onGeolocationPermissionsHidePrompt】");
+		super.onGeolocationPermissionsHidePrompt();
+	}
+	
+	@Override
+	public void onRequestFocus(WebView view) {
+		Log.i("bqt", "【onRequestFocus】" + (view == activity.getWebview()));
+		super.onRequestFocus(view);
+	}
+	
+	@Override
 	public Bitmap getDefaultVideoPoster() {
 		Log.i("bqt", "【getDefaultVideoPoster】");
 		return BitmapFactory.decodeResource(activity.getResources(), R.drawable.ic_launcher);
@@ -224,7 +263,7 @@ public class MyWebChromeClient extends WebChromeClient {
 	public void mUploadMessageForAndroid5(Intent intent, int resultCode) {
 		Log.i("bqt", "【上传图片成功后的回调】 5.0+");
 		if (mUploadMessageForAndroid5 != null) {
-			Uri result = (intent == null || resultCode != RESULT_OK) ? null : intent.getData();
+			Uri result = (intent == null || resultCode != Activity.RESULT_OK) ? null : intent.getData();
 			if (result != null) mUploadMessageForAndroid5.onReceiveValue(new Uri[]{result});
 			else mUploadMessageForAndroid5.onReceiveValue(new Uri[]{});
 			mUploadMessageForAndroid5 = null;
@@ -269,7 +308,7 @@ public class MyWebChromeClient extends WebChromeClient {
 	public void mUploadMessage(Intent intent, int resultCode) {
 		Log.i("bqt", "【上传图片成功后的回调】 5.0-");
 		if (mUploadMessage != null) {
-			if (intent != null && resultCode == RESULT_OK) mUploadMessage.onReceiveValue(intent.getData());
+			if (intent != null && resultCode == Activity.RESULT_OK) mUploadMessage.onReceiveValue(intent.getData());
 			mUploadMessage = null;
 		}
 	}

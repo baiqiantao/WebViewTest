@@ -67,7 +67,7 @@ public class MyWebViewClient extends WebViewClient {
 		//访问指定的网址发生错误时回调，我们可以在这里做错误处理，比如再请求加载一次，或者提示404的错误页面
 		//如点击一个迅雷下载的资源时【ftp://***  -10  net::ERR_UNKNOWN_URL_SCHEME】
 		Log.i("bqt", "【onReceivedError】" + request.getUrl().toString() + "  " + error.getErrorCode() + "  " + error.getDescription());
-		if (error.getErrorCode() == -10) view.loadUrl("file:///android_asset/h5/test.html");
+		if (error.getErrorCode() == -10 && request.getUrl().toString().endsWith(".mp4")) view.loadUrl("file:///android_asset/h5/test.html");
 		else super.onReceivedError(view, request, error);
 	}
 	

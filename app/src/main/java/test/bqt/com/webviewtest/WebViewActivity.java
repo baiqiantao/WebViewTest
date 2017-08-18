@@ -179,7 +179,7 @@ public class WebViewActivity extends Activity implements View.OnClickListener {
 		});
 		
 		WebSettingsUtils.setWebSettings(webview.getSettings(), model);
-		webview.setWebViewClient(new MyWebViewClient(progress_bar));
+		webview.setWebViewClient(new MyWebViewClient(this));
 		webview.setWebChromeClient(mWebChromeClient = new MyWebChromeClient(this));
 		webview.addJavascriptInterface(new WebAppinterface(this), JS_INTERFACE);// 注册后可以在JS中调用此接口中定义的方法
 		//在6.0之前，WebView没有提供setOnScrollChangeListener方法，需要我们自定义WebView，并重写其onScrollChanged方法

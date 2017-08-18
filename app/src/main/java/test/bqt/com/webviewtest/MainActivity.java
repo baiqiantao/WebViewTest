@@ -54,6 +54,7 @@ public class MainActivity extends ListActivity {
 						.setDomStorageEnabled(true)//这句话必须保留，否则无法播放优酷网页视频，其他的可以
 						.setSupportMultipleWindows(true)
 						.setMixedContentMode(WebSettingsModel.MIXED_CONTENT_ALWAYS_ALLOW)//我觉得这个设置一般都很有必要
+						.setGeolocationEnabled(true)
 						.build());
 				break;
 			case 4:
