@@ -142,7 +142,7 @@ public class MyWebViewClient extends WebViewClient {
 			return true;
 		}
 		
-		if (b) return super.shouldOverrideUrlLoading(view, url);//没必要折腾，只要设置了WebViewClient，使用默认的实现就行！
+		if (b) return super.shouldOverrideUrlLoading(view, url);//只要设置了WebViewClient，一般使用默认的实现就行！
 		else {
 			view.loadUrl(url);//不去调用系统浏览器， 而是在本WebView中跳转
 			return true;

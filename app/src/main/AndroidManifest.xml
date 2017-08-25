@@ -21,6 +21,7 @@
         </activity>
         <activity android:name=".websetting.WebSettingsTestActivity"/>
         <activity android:name=".LoadTestActivity"/>
+        <activity android:name=".HandlerTestActivity"/>
         <activity
             android:name=".WebViewActivity"
             android:configChanges="keyboardHidden|orientation|screenSize"

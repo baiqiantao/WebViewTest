@@ -58,7 +58,7 @@ public class MainActivity extends ListActivity {
 						.build());
 				break;
 			case 4:
-				
+				startActivity(new Intent(this, HandlerTestActivity.class));
 				break;
 		}
 	}
