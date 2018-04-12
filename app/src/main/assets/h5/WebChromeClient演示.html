@@ -42,11 +42,15 @@ ogod视频，有poster属性
 
 <script type="text/javascript">
 function log(){
-  console.log("log日志");
-  console.warn("warn日志");
-  console.error("error日志");
+  console.log("【log日志】");
+  console.warn("【warn日志】");
+  console.error("【error日志】");
+  JSInterface.hello("【调用原生JSInterface类中的hello方法】");
 }
 
+function javacalljs(content){
+  console.log("【原生调用JS中的方法】"+content);
+}
 
 </script>
 </html>

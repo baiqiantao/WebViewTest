@@ -38,8 +38,10 @@ public class WebSettingsUtils {
 		webSettings.setDomStorageEnabled(model.setDomStorageEnabled);//DOM存储API可用
 		webSettings.setSupportMultipleWindows(model.setSupportMultipleWindows);//支持多窗口
 		webSettings.setGeolocationEnabled(model.setGeolocationEnabled);//定位可用。需要有定位权限
-		// webview从5.0开始默认不允许混合模式，https中不能加载http资源，需要设置开启。
-		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) webSettings.setMixedContentMode(model.setMixedContentMode);
+		
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {// 5.0开始默认不允许混合模式，即https中不能加载http资源
+			webSettings.setMixedContentMode(model.setMixedContentMode);
+		}
 	}
 	
 	@SuppressLint("SetJavaScriptEnabled")

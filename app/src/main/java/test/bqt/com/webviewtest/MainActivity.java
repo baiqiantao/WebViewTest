@@ -20,10 +20,10 @@ public class MainActivity extends ListActivity {
 	
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		String[] array = {"1、演示通过WebSettingsModel设置参数启动WebViewActivity",
-				"2、演示使用隐式意图打开URL",
-				"3、测试load**方法",
-				"4、WebChromeClient重用功能演示",
+		String[] array = {"演示WebSettings中的API及对WebSettings的封装",
+				"演示使用隐式意图打开URL",
+				"测试load**方法",
+				"WebChromeClient重用功能演示",
 				"",
 				"",};
 		setListAdapter(new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, new ArrayList<String>(Arrays.asList(array))));
@@ -40,7 +40,7 @@ public class MainActivity extends ListActivity {
 				Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("http://www.dy2018.com/"));
 				intent.addCategory(Intent.CATEGORY_DEFAULT);
 				intent.addCategory(Intent.CATEGORY_BROWSABLE);
-				intent.putExtra(WebViewActivity.WEB_MODEL, WebSettingsModel.newBuilder().title("无效的数据").build());//这里传的数据不会被解析！
+				intent.putExtra(WebViewActivity.WEB_SETTINGS_MODEL, WebSettingsModel.newBuilder().title("无效的数据").build());//这里传的数据不会被解析！
 				startActivity(intent);
 				printIntentInfo(intent);
 				break;
@@ -53,7 +53,6 @@ public class MainActivity extends ListActivity {
 						.setJavaScriptEnabled(true)
 						.setDomStorageEnabled(true)//这句话必须保留，否则无法播放优酷网页视频，其他的可以
 						.setSupportMultipleWindows(true)
-						.setMixedContentMode(WebSettingsModel.MIXED_CONTENT_ALWAYS_ALLOW)//我觉得这个设置一般都很有必要
 						.setGeolocationEnabled(true)
 						.build());
 				break;
@@ -64,7 +63,7 @@ public class MainActivity extends ListActivity {
 	}
 	
 	private void printIntentInfo(Intent intent) {
-		Log.i("bqt", "传入的数据=" + intent.getParcelableExtra(WebViewActivity.WEB_MODEL)//
+		Log.i("bqt", "传入的数据=" + intent.getParcelableExtra(WebViewActivity.WEB_SETTINGS_MODEL)//
 				+ "\nUri=" + intent.getData()//http://www.dy2018.com/
 				+ "\nScheme=" + intent.getScheme()//Scheme=http
 				+ "\nType=" + intent.getType()//Type=null
