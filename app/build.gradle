@@ -1,10 +1,10 @@
 apply plugin: 'com.android.application'
-apply plugin: 'me.tatarka.retrolambda'
+
 android {
     compileSdkVersion 27
     buildToolsVersion '27.0.3'
     defaultConfig {
-        applicationId "test.bqt.com.webviewtest"
+        applicationId "com.bqt.test.wv"
         minSdkVersion 19
         targetSdkVersion 27
         versionCode 1
@@ -25,9 +25,9 @@ android {
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
-    androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
+    androidTestImplementation('com.android.support.test.espresso:espresso-core:2.2.2', {
         exclude group: 'com.android.support', module: 'support-annotations'
     })
     implementation 'com.android.support:appcompat-v7:27.1.1'
-    testCompile 'junit:junit:4.12'
+    testImplementation 'junit:junit:4.12'
 }

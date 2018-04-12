@@ -1,10 +1,10 @@
-package test.bqt.com.webviewtest.client;
+package com.bqt.test.wv.client;
 
 import android.content.Context;
 import android.view.MotionEvent;
 import android.widget.FrameLayout;
 
-import test.bqt.com.webviewtest.R;
+import com.bqt.test.wv.R;
 
 public class FullscreenHolder extends FrameLayout {
 	

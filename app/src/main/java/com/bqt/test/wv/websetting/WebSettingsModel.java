@@ -1,4 +1,4 @@
-package test.bqt.com.webviewtest.websetting;
+package com.bqt.test.wv.websetting;
 
 import android.os.Parcel;
 import android.os.Parcelable;

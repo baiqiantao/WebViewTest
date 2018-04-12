@@ -1,4 +1,4 @@
-package test.bqt.com.webviewtest.client;
+package com.bqt.test.wv.client;
 
 import android.annotation.TargetApi;
 import android.content.Intent;
@@ -20,7 +20,7 @@ import android.widget.ProgressBar;
 import java.io.IOException;
 import java.util.Random;
 
-import test.bqt.com.webviewtest.WebViewActivity;
+import com.bqt.test.wv.WebViewActivity;
 
 public class MyWebViewClient extends WebViewClient {
 	private ProgressBar mProgressBar;
@@ -124,28 +124,41 @@ public class MyWebViewClient extends WebViewClient {
 	@TargetApi(Build.VERSION_CODES.LOLLIPOP)
 	@Override
 	public boolean shouldOverrideUrlLoading(WebView view, WebResourceRequest request) {
-		//貌似都还是调用的废弃的那个方法
-		Log.i("bqt", "【shouldOverrideUrlLoading】" + request.getUrl().toString() + "  " + request.getMethod());
+		WebView.HitTestResult hitTestResult = view.getHitTestResult();
+		int type = hitTestResult.getType();
+		Log.i("bqt", "【shouldOverrideUrlLoading】" + request.getMethod() + "  " + type + "  " + request.getUrl().toString());
+		switch (type) {
+			case WebView.HitTestResult.UNKNOWN_TYPE: //0 未知，【异步重定向】
+				break;
+			case WebView.HitTestResult.PHONE_TYPE: //2 处理拨号
+				break;
+			case WebView.HitTestResult.GEO_TYPE: //3 地图类型
+				break;
+			case WebView.HitTestResult.EMAIL_TYPE: //4 处理Email
+				break;
+			case WebView.HitTestResult.IMAGE_TYPE: //5 处理长按图片的菜单项
+			case WebView.HitTestResult.SRC_IMAGE_ANCHOR_TYPE: //8 带有链接的图片
+				break;
+			case WebView.HitTestResult.SRC_ANCHOR_TYPE: //7 超链接
+				break;
+			case WebView.HitTestResult.EDIT_TEXT_TYPE: //9 可编辑的区域
+				break;
+		}
 		return super.shouldOverrideUrlLoading(view, request);
 	}
 	
 	@SuppressWarnings("deprecation")
 	@Override
 	public boolean shouldOverrideUrlLoading(WebView view, String url) {
-		boolean b = new Random().nextBoolean();
-		Log.i("bqt", "【shouldOverrideUrlLoading废弃方法】" + b + "  " + url);
+		Log.i("bqt", "【shouldOverrideUrlLoading废弃方法】" + url);
 		//识别电话、短信、邮件等
 		if (url.startsWith(WebView.SCHEME_TEL) || url.startsWith("sms:") || url.startsWith(WebView.SCHEME_MAILTO)) {
 			Intent intent = new Intent(Intent.ACTION_VIEW);
 			intent.setData(Uri.parse(url));
 			view.getContext().startActivity(intent);
-			return true;
-		}
-		
-		if (b) return super.shouldOverrideUrlLoading(view, url);//只要设置了WebViewClient，一般使用默认的实现就行！
-		else {
+		} else {
 			view.loadUrl(url);//不去调用系统浏览器， 而是在本WebView中跳转
-			return true;
 		}
+		return true;
 	}
 }

@@ -1,4 +1,4 @@
-package test.bqt.com.webviewtest.websetting;
+package com.bqt.test.wv.websetting;
 
 import android.annotation.SuppressLint;
 import android.os.Build;

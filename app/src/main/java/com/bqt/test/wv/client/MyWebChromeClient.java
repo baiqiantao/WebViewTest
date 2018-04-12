@@ -1,4 +1,4 @@
-package test.bqt.com.webviewtest.client;
+package com.bqt.test.wv.client;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -23,11 +23,11 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.Toast;
 
+import com.bqt.test.wv.R;
+import com.bqt.test.wv.WebViewActivity;
+
 import java.util.Arrays;
 import java.util.Random;
-
-import test.bqt.com.webviewtest.R;
-import test.bqt.com.webviewtest.WebViewActivity;
 
 public class MyWebChromeClient extends WebChromeClient {
 	private WebViewActivity activity;//控件的显示和隐藏应该都由WebViewClient控制

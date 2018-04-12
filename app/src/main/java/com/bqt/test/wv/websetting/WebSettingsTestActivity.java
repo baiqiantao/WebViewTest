@@ -1,4 +1,4 @@
-package test.bqt.com.webviewtest.websetting;
+package com.bqt.test.wv.websetting;
 
 import android.app.ListActivity;
 import android.os.Bundle;
@@ -10,7 +10,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Random;
 
-import test.bqt.com.webviewtest.WebViewActivity;
+import com.bqt.test.wv.WebViewActivity;
 
 /**
  * 演示通过WebSettingsModel设置参数启动WebViewActivity

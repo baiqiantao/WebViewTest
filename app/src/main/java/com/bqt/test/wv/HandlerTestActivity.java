@@ -1,4 +1,4 @@
-package test.bqt.com.webviewtest;
+package com.bqt.test.wv;
 
 import android.app.ListActivity;
 import android.os.Bundle;

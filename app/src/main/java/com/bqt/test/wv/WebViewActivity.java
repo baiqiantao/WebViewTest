@@ -1,4 +1,4 @@
-package test.bqt.com.webviewtest;
+package com.bqt.test.wv;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -18,10 +18,10 @@ import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
-import test.bqt.com.webviewtest.client.MyWebChromeClient;
-import test.bqt.com.webviewtest.client.MyWebViewClient;
-import test.bqt.com.webviewtest.websetting.WebSettingsModel;
-import test.bqt.com.webviewtest.websetting.WebSettingsUtils;
+import com.bqt.test.wv.client.MyWebChromeClient;
+import com.bqt.test.wv.client.MyWebViewClient;
+import com.bqt.test.wv.websetting.WebSettingsModel;
+import com.bqt.test.wv.websetting.WebSettingsUtils;
 
 public class WebViewActivity extends Activity {
 	public static final String WEB_SETTINGS_MODEL = "WebSettingsModel";

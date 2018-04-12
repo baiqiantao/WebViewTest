@@ -1,4 +1,4 @@
-package test.bqt.com.webviewtest;
+package com.bqt.test.wv;
 
 import android.annotation.SuppressLint;
 import android.app.ListActivity;
@@ -10,18 +10,19 @@ import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
+import com.bqt.test.wv.load.LoadUrl_DataActivity;
+import com.bqt.test.wv.websetting.WebSettingsModel;
+import com.bqt.test.wv.websetting.WebSettingsTestActivity;
+
 import java.util.ArrayList;
 import java.util.Arrays;
-
-import test.bqt.com.webviewtest.websetting.WebSettingsModel;
-import test.bqt.com.webviewtest.websetting.WebSettingsTestActivity;
 
 public class MainActivity extends ListActivity {
 	
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		String[] array = {"演示WebSettings中的API及对WebSettings的封装",
-				"演示使用隐式意图打开URL",
+				"演示通过隐式意图打开网页URL",
 				"测试load**方法",
 				"WebChromeClient重用功能演示",
 				"",
@@ -37,15 +38,10 @@ public class MainActivity extends ListActivity {
 				startActivity(new Intent(this, WebSettingsTestActivity.class));
 				break;
 			case 1:
-				Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("http://www.dy2018.com/"));
-				intent.addCategory(Intent.CATEGORY_DEFAULT);
-				intent.addCategory(Intent.CATEGORY_BROWSABLE);
-				intent.putExtra(WebViewActivity.WEB_SETTINGS_MODEL, WebSettingsModel.newBuilder().title("无效的数据").build());//这里传的数据不会被解析！
-				startActivity(intent);
-				printIntentInfo(intent);
+				launchByImplicitIntent();
 				break;
 			case 2:
-				startActivity(new Intent(this, LoadTestActivity.class));
+				startActivity(new Intent(this, LoadUrl_DataActivity.class));
 				break;
 			case 3:
 				WebViewActivity.start(this, WebSettingsModel.newBuilder()
@@ -62,9 +58,12 @@ public class MainActivity extends ListActivity {
 		}
 	}
 	
-	private void printIntentInfo(Intent intent) {
-		Log.i("bqt", "传入的数据=" + intent.getParcelableExtra(WebViewActivity.WEB_SETTINGS_MODEL)//
-				+ "\nUri=" + intent.getData()//http://www.dy2018.com/
+	private void launchByImplicitIntent() {
+		Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("http://www.dy2018.com/"));
+		intent.addCategory(Intent.CATEGORY_DEFAULT);//可省略
+		intent.addCategory(Intent.CATEGORY_BROWSABLE);//可省略
+		startActivity(intent);
+		Log.i("bqt", "Uri=" + intent.getData()//http://www.dy2018.com/
 				+ "\nScheme=" + intent.getScheme()//Scheme=http
 				+ "\nType=" + intent.getType()//Type=null
 				+ "\nFlags=" + intent.getFlags()//Flags=0

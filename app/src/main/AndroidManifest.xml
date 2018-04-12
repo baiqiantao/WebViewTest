@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-          package="test.bqt.com.webviewtest">
+          package="com.bqt.test.wv">
 
     <uses-permission android:name="android.permission.INTERNET"/>
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
@@ -20,19 +20,18 @@
             </intent-filter>
         </activity>
         <activity android:name=".websetting.WebSettingsTestActivity"/>
-        <activity android:name=".LoadTestActivity"/>
+        <activity android:name=".load.LoadUrl_DataActivity"/>
         <activity android:name=".HandlerTestActivity"/>
+        <activity android:name=".WebViewActivity"/>
         <activity
-            android:name=".WebViewActivity"
+            android:name=".activity.BrowserWebViewActivity"
             android:configChanges="keyboardHidden|orientation|screenSize"
             android:hardwareAccelerated="true"
-            android:label="包青天的浏览器">
+            android:label="建议通过包青天的浏览器启动">
             <intent-filter>
                 <action android:name="android.intent.action.VIEW"/>
-
                 <category android:name="android.intent.category.DEFAULT"/>
                 <category android:name="android.intent.category.BROWSABLE"/>
-
                 <data android:scheme="http"/>
                 <data android:scheme="https"/>
                 <data android:scheme="about"/>
