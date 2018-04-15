@@ -17,10 +17,11 @@ import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.ProgressBar;
 
-import java.io.IOException;
-import java.util.Random;
-
 import com.bqt.test.wv.WebViewActivity;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.Random;
 
 public class MyWebViewClient extends WebViewClient {
 	private ProgressBar mProgressBar;
@@ -65,8 +66,8 @@ public class MyWebViewClient extends WebViewClient {
 	@Override
 	public void onReceivedError(WebView view, WebResourceRequest request, WebResourceError error) {
 		//访问指定的网址发生错误时回调，我们可以在这里做错误处理，比如再请求加载一次，或者提示404的错误页面
-		//如点击一个迅雷下载的资源时【ftp://***  -10  net::ERR_UNKNOWN_URL_SCHEME】
 		Log.i("bqt", "【onReceivedError】" + request.getUrl().toString() + "  " + error.getErrorCode() + "  " + error.getDescription());
+		//如点击一个迅雷下载的资源时的错误信息为【ftp://***  -10  net::ERR_UNKNOWN_URL_SCHEME】，此时我们就可以加载指定的页面
 		if (error.getErrorCode() == -10 && request.getUrl().toString().endsWith(".mp4")) view.loadUrl("file:///android_asset/h5/test.html");
 		else super.onReceivedError(view, request, error);
 	}
@@ -74,7 +75,7 @@ public class MyWebViewClient extends WebViewClient {
 	@TargetApi(Build.VERSION_CODES.M)
 	@Override
 	public void onReceivedHttpError(WebView view, WebResourceRequest request, WebResourceResponse errorResponse) {
-		//HTTP错误具有> = 400的状态码。请注意，errorResponse参数中可能不提供服务器响应的内容。
+		//HTTP错误具有 >=400 的状态码。请注意，errorResponse参数中可能不提供服务器响应的内容。
 		//如【502  utf-8  text/html】【http://www.dy2018.com/favicon.ico  404    text/html】
 		Log.i("bqt", "【onReceivedHttpError】" + request.getUrl().toString() + "  " + errorResponse.getStatusCode()
 				+ "  " + errorResponse.getEncoding() + "  " + errorResponse.getMimeType());
@@ -83,7 +84,7 @@ public class MyWebViewClient extends WebViewClient {
 	
 	@Override
 	public void onReceivedSslError(WebView view, SslErrorHandler handler, SslError error) {
-		//HTTP错误具有> = 400的状态码。请注意，errorResponse参数中可能不提供服务器响应的内容。
+		//HTTP错误具有 >=400 的状态码。请注意，errorResponse参数中可能不提供服务器响应的内容。
 		//如，点击12306中的购票时【https://kyfw.12306.cn/otn/  3  Issued to: CN=kyfw.12306.cn,***】
 		Log.i("bqt", "【onReceivedSslError】" + error.getUrl() + "  " + error.getPrimaryError() + "  " + error.getCertificate().toString());
 		if (new Random().nextBoolean()) super.onReceivedSslError(view, handler, error);//默认行为，取消加载
@@ -92,7 +93,7 @@ public class MyWebViewClient extends WebViewClient {
 	
 	@Override
 	public void onScaleChanged(WebView view, float oldScale, float newScale) {
-		//应用程序可以处理改事件，比如调整适配屏幕
+		//应用程序可以处理该事件，比如调整适配屏幕
 		Log.i("bqt", "【onScaleChanged】" + "oldScale=" + oldScale + "  newScale=" + newScale);
 		super.onScaleChanged(view, oldScale, newScale);
 	}
@@ -106,7 +107,8 @@ public class MyWebViewClient extends WebViewClient {
 		if (new Random().nextBoolean()) return super.shouldInterceptRequest(view, request);
 		else if (request.getUrl().toString().endsWith("你妹的.jpg")) {
 			try {
-				return new WebResourceResponse("text/html", "UTF-8", view.getContext().getAssets().open("icon.jpg"));
+				InputStream data = view.getContext().getAssets().open("icon.jpg");
+				return new WebResourceResponse("text/html", "UTF-8", data);
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
