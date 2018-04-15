@@ -20,7 +20,7 @@
             </intent-filter>
         </activity>
         <activity android:name=".websetting.WebSettingsTestActivity"/>
-        <activity android:name=".load.LoadUrl_DataActivity"/>
+        <activity android:name=".load.WebViewLoadTestActivity"/>
         <activity android:name=".HandlerTestActivity"/>
         <activity android:name=".WebViewActivity"/>
         <activity

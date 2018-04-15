@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+
+<button onclick='jscalljava("包青天")'>点击后调用 JS 的 jscalljava 方法，在此方法中 JS 调用原生 JSInterface 类中的 hello 方法，原生 hello 方法执行完操作后回调 JS 中的 javacalljs 方法</button>
+<button onclick='jscalljava2()'>演示原生调用 JS 方法后，JS 将执行完return的结果通过原生提供的 ValueCallback 对象的 onReceiveValue 方法回调给原生</button>
+
+</body>
+
+<script type="text/javascript">
+function jscalljava(content){
+    console.log("【jscalljava】");
+    JSInterface.hello(content);
+}
+
+function jscalljava2(){
+    console.log("【jscalljava2】");
+    var content="[\"包青天\",\"白乾涛\",\"bqt\"]";
+    JSInterface.hello2(content);
+}
+
+function javacalljs(content){
+    console.log("【js中的javacalljs方法被调用了】content="+content);
+}
+
+function javacalljs2(content){
+    console.log("【js中的javacalljs2方法被调用了】content="+content);
+    return 20094;
+}
+
+</script>
+</html>

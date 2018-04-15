@@ -10,7 +10,7 @@ import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
-import com.bqt.test.wv.load.LoadUrl_DataActivity;
+import com.bqt.test.wv.load.WebViewLoadTestActivity;
 import com.bqt.test.wv.websetting.WebSettingsModel;
 import com.bqt.test.wv.websetting.WebSettingsTestActivity;
 
@@ -23,7 +23,7 @@ public class MainActivity extends ListActivity {
 		super.onCreate(savedInstanceState);
 		String[] array = {"演示WebSettings中的API及对WebSettings的封装",
 				"演示通过隐式意图打开网页URL",
-				"测试load**方法",
+				"测试加载网页、加载资源的各种方法",
 				"WebChromeClient重用功能演示",
 				"",
 				"",};
@@ -41,9 +41,13 @@ public class MainActivity extends ListActivity {
 				launchByImplicitIntent();
 				break;
 			case 2:
-				startActivity(new Intent(this, LoadUrl_DataActivity.class));
+				startActivity(new Intent(this, WebViewLoadTestActivity.class));
 				break;
 			case 3:
+				WebViewActivity.start(this, WebSettingsModel.newBuilder()
+						.url("file:///android_asset/h5/JS交互演示.html").setJavaScriptEnabled(true).build());
+				break;
+			case 4:
 				WebViewActivity.start(this, WebSettingsModel.newBuilder()
 						.url("file:///android_asset/h5/WebChromeClient演示.html")
 						.setJavaScriptEnabled(true)
@@ -52,7 +56,7 @@ public class MainActivity extends ListActivity {
 						.setGeolocationEnabled(true)
 						.build());
 				break;
-			case 4:
+			case 5:
 				startActivity(new Intent(this, HandlerTestActivity.class));
 				break;
 		}
