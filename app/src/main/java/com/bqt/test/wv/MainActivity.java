@@ -24,7 +24,9 @@ public class MainActivity extends ListActivity {
 		String[] array = {"演示WebSettings中的API及对WebSettings的封装",
 				"演示通过隐式意图打开网页URL",
 				"测试加载网页、加载资源的各种方法",
-				"WebChromeClient重用功能演示",
+				
+				"WebView 和JS交互 addJavascriptInterface evaluateJavascript",
+				"WebChromeClient回调方法演示",
 				"",
 				"",};
 		setListAdapter(new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, new ArrayList<String>(Arrays.asList(array))));
@@ -48,13 +50,13 @@ public class MainActivity extends ListActivity {
 						.url("file:///android_asset/h5/JS交互演示.html").setJavaScriptEnabled(true).build());
 				break;
 			case 4:
-				WebViewActivity.start(this, WebSettingsModel.newBuilder()
+				WebSettingsModel model = WebSettingsModel.newBuilder()
 						.url("file:///android_asset/h5/WebChromeClient演示.html")
 						.setJavaScriptEnabled(true)
-						.setDomStorageEnabled(true)//这句话必须保留，否则无法播放优酷网页视频，其他的可以
 						.setSupportMultipleWindows(true)
 						.setGeolocationEnabled(true)
-						.build());
+						.build();
+				WebViewActivity.start(this, model);
 				break;
 			case 5:
 				startActivity(new Intent(this, HandlerTestActivity.class));

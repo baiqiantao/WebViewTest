@@ -48,10 +48,10 @@ public class MyWebChromeClient extends WebChromeClient {
 	public boolean onJsAlert(WebView view, String url, String message, JsResult result) {
 		//If the client returns true, WebView will assume that the client will handle the dialog. Otherwise, it will continue execution执行.
 		boolean b = new Random().nextBoolean();
-		Log.i("bqt", "【onJsAlert】" + b + "  " + url + "  " + message);
-		if (b) return super.onJsAlert(view, url, message, result);//默认为return false，有弹窗
+		Log.i("bqt", "【onJsAlert】" + b + "  " + url + "  " + message);//message 是 alert 方法中参数的值，即弹窗显示的内容
+		if (b) return super.onJsAlert(view, url, message, result);//默认为return false，此时有弹窗
 		else {//拦截html中alert函数之后，我们可以在这里做任何自己的操作。我们还可以根据message来做不同的操作
-			Toast.makeText(view.getContext(), "onJsAlert，message=" + message, Toast.LENGTH_SHORT).show();
+			Toast.makeText(view.getContext(), "onJsAlert，此时将不会有弹窗", Toast.LENGTH_SHORT).show();
 			result.confirm();//confirm()表示点击了弹出框的确定按钮，cancel()则表示点击了弹出框的取消按钮。两者必须调用一个
 			return true;//如果return true，不弹出对话框了；否则，会继续弹出对话框
 		}
@@ -61,10 +61,9 @@ public class MyWebChromeClient extends WebChromeClient {
 	public boolean onJsConfirm(WebView view, String url, String message, JsResult result) {
 		boolean b = new Random().nextBoolean();
 		Log.i("bqt", "【onJsConfirm】" + b + "  " + url + "  " + message);
-		//return super.onJsConfirm(view, url, message, result);//默认为return false，有弹窗
-		Toast.makeText(view.getContext(), "onJsConfirm，message=" + message, Toast.LENGTH_SHORT).show();
+		Toast.makeText(view.getContext(), "onJsConfirm，此时将不会有弹窗", Toast.LENGTH_SHORT).show();
 		result.confirm();
-		return b;//如果return true，不弹出对话框了；否则，会继续弹出对话框
+		return b;//如果return true，不弹出对话框了；否则，会继续弹出对话框。默认为return false，有弹窗
 	}
 	
 	@Override
@@ -119,7 +118,7 @@ public class MyWebChromeClient extends WebChromeClient {
 		super.getVisitedHistory(callback);
 	}
 	
-	@Override
+@Override
 	public boolean onCreateWindow(WebView webView, boolean isDialog, boolean isUserGesture, Message resultMsg) {
 		Log.i("bqt", "【onCreateWindow】 " + isDialog + "  " + isUserGesture + "\n详细信息" + resultMsg.toString());
 		return super.onCreateWindow(webView, isDialog, isUserGesture, resultMsg);//默认是returns false
